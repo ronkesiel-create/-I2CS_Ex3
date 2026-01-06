@@ -20,9 +20,9 @@ public class Index2D implements Pixel2D {
         double u = (dx * dx + dy * dy);
         return Math.sqrt(u);
     }
-    @Override
+   @Override
     public String toString() {
-        return getX()+","+getY();
+        return "["+getX()+","+getY()+"]";
     }
     @Override
     public boolean equals(Object t) {
