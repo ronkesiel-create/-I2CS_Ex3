@@ -12,5 +12,9 @@ Here's an explanation about the algorithm about each state:
         stage 2 : Finds the closet point to pacman that's also pink.
         stage 3 : Gets the shortest path from pacman to point.
         stage 4 : returns the direction for pacman to go according to the 2nd pixel in the path.
-
+        
+2.green: stage 1 : Gets A Map with all the distances from the pacman.
+         stage 2 : Finds the closet point to pacman that's also green.
+         stage 3 : Gets the shortest path from pacman to point.
+         stage 4 : returns the direction for pacman to go according to the 2nd pixel in the path.
         
