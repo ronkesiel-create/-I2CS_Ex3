@@ -20,9 +20,10 @@ Here's an explanation about the algorithm about each state:
          stage 4 : returns the direction for pacman to go according to the 2nd pixel in the path.
 
 3.black: stage 1 : Gets A Map with all the distances from the ghosts.
-         stage 2 : Gets All the neighbors from pacman and their distances from their closest ghosts.
-         stage 3 : Get the neighbor which has the biggest distances from the closest ghost.
-         stage 4 : returns the direction for pacman to go according to the neighbor from stage 3.
+         stage 2 : Gets the distances from all the ghost and checks for the closest ghost.
+         stage 3 : Gets All the neighbors from pacman and their distances from their closest ghosts.
+         stage 4 : Get the neighbor which has the biggest distances from the closest ghost.
+         stage 5 : returns the direction for pacman to go according to the neighbor from stage 3.
         
 
 
