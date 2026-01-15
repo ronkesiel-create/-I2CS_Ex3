@@ -8,6 +8,7 @@ Here's an explanation about the 4 states.
 4.white:The pacman wants to eat the ghosts.
 
 Here's an explanation about the algorithm about each state:
+
 1.pink: stage 1 : Gets A Map with all the distances from the pacman.
         stage 2 : Finds the closet point to pacman that's also pink.
         stage 3 : Gets the shortest path from pacman to point.
