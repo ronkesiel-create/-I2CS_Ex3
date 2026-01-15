@@ -145,31 +145,40 @@ public class Ex3Algo implements PacManAlgo {
         ArrayList<Pixel2D> neighbors = new ArrayList<>();
         for (int i = 0; i < distanceBoard.getWidth(); i++) {
             for (int j = 0; j < distanceBoard.getHeight(); j++) {
-                if (distanceBoard.getPixel(i,j) == 1){
-                    neighbors.add(new Index2D(i,j));
+                if (distanceBoard.getPixel(i, j) == 1) {
+                    neighbors.add(new Index2D(i, j));
                 }
             }
         }
 
         // distances of the neighbors
         ArrayList<Map2D> neighborsDistances = new ArrayList<>(neighbors.size());
-        int[] neighborsGrades = new int[neighbors.size()];
         for (int i = 0; i < neighbors.size(); i++) {
-            neighborsDistances.set(i,colorBoard.allDistance(neighbors.get(i), blue));
+            neighborsDistances.set(i, colorBoard.allDistance(neighbors.get(i), blue));
         }
         //distances of the neighbors from the closest ghost
+        int[] neighborsGrades = new int[neighbors.size()];
         for (int i = 0; i < neighbors.size(); i++) {
             //i==neighbor
             neighborsGrades[i] = Integer.MAX_VALUE;
             for (int j = 0; j < ghosts.length; j++) {
-                if (neighborsDistances.get(i).getPixel(ghostPos[j]) < neighborsGrades[i]){
+                if (neighborsDistances.get(i).getPixel(ghostPos[j]) < neighborsGrades[i]) {
                     neighborsGrades[i] = neighborsDistances.get(i).getPixel(ghostPos[j]);
                 }
             }
-            ;
         }
+        //Gets the neighbor with farest ghost
+        int max = dangerDistanceMin;
+        Pixel2D chosenNeighbor = new Index2D(pacmanPos);
+        for (int i = 0; i < neighborsGrades.length; i++) {
+            if (neighborsGrades[i] > max) {
+                max = neighborsGrades[i];
+                chosenNeighbor = neighbors.get(i);
+            }
+        }
+        // set the direction of pacman
 
-        return 1;
+        return getDirection(pacmanPos, chosenNeighbor, colorBoard);
     }
 
     private static int getDirection(Pixel2D first, Pixel2D second, Map2D map) {
