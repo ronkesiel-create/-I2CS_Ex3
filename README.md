@@ -28,7 +28,8 @@ Here's an explanation about the algorithm about each state:
 
 
 
-3.white: stage 1: Gets A Map with all the distances from the ghosts.
+not done yet
+4.white: stage 1: Gets A Map with all the distances from the ghosts.
          stage 2: Finds the closet point to pacman that's also ghost.
          stage 3: Gets the shortest path from pacman to ghost.
          stage 4: returns the direction for pacman to go according to the 2nd pixel in the path.
