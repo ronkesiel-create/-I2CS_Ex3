@@ -4,6 +4,7 @@ import exe.ex3.game.PacManAlgo;
 import exe.ex3.game.PacmanGame;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * This is the major algorithmic class for Ex3 - the PacMan game:
@@ -117,6 +118,59 @@ public class Ex3Algo implements PacManAlgo {
         return dir;
     }
 
+    private static int escapeAlgo(PacmanGame game) {
+        int blue = Game.getIntColor(Color.BLUE, CODE);
+        //stage 1
+        Map2D colorBoard = new Map(game.getGame(CODE));
+        Pixel2D pacmanPos = convertPos(game.getPos(CODE));
+        Map2D distanceBoard = colorBoard.allDistance(pacmanPos, blue);
+        // stage 2
+        GhostCL[] ghosts = game.getGhosts(CODE);
+        int[] dangerDistance = new int[ghosts.length];
+        Pixel2D[] ghostPos = new Pixel2D[ghosts.length];
+        // Creates the dangerDistance of ghosts
+        for (int i = 0; i < ghosts.length; i++) {
+            ghostPos[i] = convertPos(ghosts[i].getPos(CODE));
+            dangerDistance[i] = distanceBoard.getPixel(ghostPos[i]);
+        }
+        // Gets the minimum from dangerDistance
+        int dangerDistanceMin = Integer.MAX_VALUE;
+        for (int i = 0; i < dangerDistance.length; i++) {
+            if (dangerDistance[i] < dangerDistanceMin) {
+                dangerDistanceMin = dangerDistance[i];
+            }
+        }
+        // stage 3
+        // Get the neighbors of pacman
+        ArrayList<Pixel2D> neighbors = new ArrayList<>();
+        for (int i = 0; i < distanceBoard.getWidth(); i++) {
+            for (int j = 0; j < distanceBoard.getHeight(); j++) {
+                if (distanceBoard.getPixel(i,j) == 1){
+                    neighbors.add(new Index2D(i,j));
+                }
+            }
+        }
+
+        // distances of the neighbors
+        ArrayList<Map2D> neighborsDistances = new ArrayList<>(neighbors.size());
+        int[] neighborsGrades = new int[neighbors.size()];
+        for (int i = 0; i < neighbors.size(); i++) {
+            neighborsDistances.set(i,colorBoard.allDistance(neighbors.get(i), blue));
+        }
+        //distances of the neighbors from the closest ghost
+        for (int i = 0; i < neighbors.size(); i++) {
+            //i==neighbor
+            neighborsGrades[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < ghosts.length; j++) {
+                if (neighborsDistances.get(i).getPixel(ghostPos[j]) < neighborsGrades[i]){
+                    neighborsGrades[i] = neighborsDistances.get(i).getPixel(ghostPos[j]);
+                }
+            }
+            ;
+        }
+
+        return 1;
+    }
 
     private static int getDirection(Pixel2D first, Pixel2D second, Map2D map) {
         //cyclic
