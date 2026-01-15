@@ -49,7 +49,7 @@ public class Ex3Algo implements PacManAlgo {
             int up = Game.UP, left = Game.LEFT, down = Game.DOWN, right = Game.RIGHT;
         }
         _count++;
-        int dir = greenAlgo(game);
+        int dir = escapeAlgo(game);
         return dir;
     }
 
@@ -152,9 +152,9 @@ public class Ex3Algo implements PacManAlgo {
         }
 
         // distances of the neighbors
-        ArrayList<Map2D> neighborsDistances = new ArrayList<>(neighbors.size());
+        ArrayList<Map2D> neighborsDistances = new ArrayList<>();
         for (int i = 0; i < neighbors.size(); i++) {
-            neighborsDistances.set(i, colorBoard.allDistance(neighbors.get(i), blue));
+            neighborsDistances.add(i, colorBoard.allDistance(neighbors.get(i), blue));
         }
         //distances of the neighbors from the closest ghost
         int[] neighborsGrades = new int[neighbors.size()];
