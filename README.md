@@ -18,6 +18,7 @@ Here's an explanation about the algorithm about each state:
          stage 2 : Finds the closet point to pacman that's also green.
          stage 3 : Gets the shortest path from pacman to point.
          stage 4 : returns the direction for pacman to go according to the 2nd pixel in the path.
+         //stage //5 : returns to the pink algorithm once all the greens have been eaten.
 
 3.black: stage 1 : Gets A Map with all the distances from the ghosts.
          stage 2 : Gets the distances from all the ghost and checks for the closest ghost.
@@ -30,7 +31,9 @@ Here's an explanation about the algorithm about each state:
 
 
 not done yet
-4.white: stage 1: Gets A Map with all the distances from the ghosts.
-         stage 2: Finds the closet point to pacman that's also ghost.
-         stage 3: Gets the shortest path from pacman to ghost.
-         stage 4: returns the direction for pacman to go according to the 2nd pixel in the path.
+4.white: stage 1 : Gets A Map with all the distances from the ghosts, similar to black.
+         stage 2 : Finds the closet point to pacman that's also ghost, similar to green
+         stage 3 : Gets the shortest path from pacman to ghost, similar to green
+         stage 4 : returns the direction for pacman to go according to the 2nd pixel in the path, similar to green.
+         
+         //stage //5 : returns to the pink algorithm once all the greens have been eaten.
