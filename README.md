@@ -71,11 +71,14 @@ form escape state:
 
         if the ghosts are far enough from pacman: Returns to pink algorithm.
 
-        from green state:
+from green state:
 
-        if the 
+        if the pacman is touching a green dot: Runs the chase state.
 
-        
+
+from chase state:
+
+        if the ghosts timer is close to running out: Returns to escape algorithm.
 
         
 
