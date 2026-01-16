@@ -59,18 +59,21 @@ stage 1 : Gets A Map with all the distances from the ghosts.
          
 Heres the explanation about the switching between the states:
 
-        start : Runs the pink algorithm.
+start : Runs the pink algorithm.
 
-        from pink state:
+from pink state:
 
         if the ghosts are too close to pacman : Runs the escape algorithm.
 
-        form escape state:
+form escape state:
 
         if the pacman is close to green dot: Runs the green algorithm.
 
-        if the ghosts are far enough from pacman: Returns to pink algorithm
+        if the ghosts are far enough from pacman: Returns to pink algorithm.
 
+        from green state:
+
+        if the 
 
         
 
