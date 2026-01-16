@@ -69,7 +69,7 @@ form escape state:
 
         if the pacman is close to green dot: Runs the green algorithm.
 
-        if the ghosts are far enough from pacman: Returns to pink algorithm.
+        if the ghosts are far enough from pacman:  Automatically Runs to pink algorithm.
 
 from green state:
 
