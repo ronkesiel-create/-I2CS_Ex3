@@ -49,10 +49,35 @@ public class Ex3Algo implements PacManAlgo {
             int up = Game.UP, left = Game.LEFT, down = Game.DOWN, right = Game.RIGHT;
         }
         _count++;
-        int dir = escapeAlgo(game);
+        int dir = 0;
+        /**
+         * checks to deside if to go eat the ghost or the pink dots.
+         */
+        if (isInDanger(game) && ghostAreEatble(game)) {
+             dir = chaseAlgo(game);
+        }
+        else {
+             dir = pinkAlgo(game);
+        }
         return dir;
     }
 
+    /**
+     * This function gets the time that the ghost Are Eatble.
+     * This Allows the pacman to know when its Safe to go eat the ghosts.
+     * @param game
+     * @return remain Time for ghosts to be Eatable.
+     */
+    private static boolean ghostAreEatble(PacmanGame game) {
+    GhostCL[] gs = game.getGhosts(CODE);
+    for (int i = 0; i < gs.length; i++) {
+        GhostCL g = gs[i];
+        if (g.remainTimeAsEatable(CODE)>1.5) {
+            return true;
+        }
+    }
+    return false;
+}
     private static void printBoard(int[][] b) {
         for (int y = 0; y < b[0].length; y++) {
             for (int x = 0; x < b.length; x++) {
@@ -79,7 +104,21 @@ public class Ex3Algo implements PacManAlgo {
         return pixelPos;
     }
 
+    /**
+     * This is the default function for pacman.
+     * pacman goes for the other functions from move or pinkAlgo if their conditions are met
+     * @param game
+     * @return escapeAlgo if pacman is close enough to the ghosts
+     * @return The direction for the closest pink dot to pacman otherwise
+     */
     private static int pinkAlgo(PacmanGame game) {
+        /**
+         *  Checks if the pacman is close enough to the ghosts.
+         *  @return escapeAlgo if so.
+         */
+        if (isInDanger(game)) {
+            return escapeAlgo(game);
+        }
         int blue = Game.getIntColor(Color.BLUE, CODE);
         int pink = Game.getIntColor(Color.PINK, CODE);
         // stage 1
@@ -99,16 +138,23 @@ public class Ex3Algo implements PacManAlgo {
         return dir;
     }
 
+    /**
+     * This function returns The direction for the closest green dot to pacman
+     * @param game
+     * @return The direction for the closest green dot to pacman
+     */
+
     private static int greenAlgo(PacmanGame game) {
         int blue = Game.getIntColor(Color.BLUE, CODE);
         int green = Game.getIntColor(Color.GREEN, CODE);
+        // stage 1
         Map2D colorBoard = new Map(game.getGame(CODE));
         Pixel2D pacmanPos = convertPos(game.getPos(CODE));
         Map2D distanceBoard = colorBoard.allDistance(pacmanPos, blue);
         // stage 2
         Pixel2D pixelMin = getClosestWantedPixel(colorBoard, green, distanceBoard, pacmanPos);
         if (pixelMin.equals(pacmanPos)) {
-            return pinkAlgo(game);
+            return randomDir();
         }
         // stage 3
         Pixel2D[] shortestPath = colorBoard.shortestPath(pacmanPos, pixelMin, blue);
@@ -118,7 +164,21 @@ public class Ex3Algo implements PacManAlgo {
         return dir;
     }
 
+    /**
+     * This function gets the distances of the ghosts to pacman and his neigbors.
+     * Then gets who's neighbor has the farest ghost from pacman.
+     * Set the direction of pacman to that neighbor.
+     * @param game
+     * checks at first the distances of the ghosts to pacman,to see who is the closest ghost.
+     * Then it checks distances of the neighbors, to see who is closest ghost to each one of them.
+     * Once it has distances, it checks who's neighbor's ghost has the Highest distance from pacman.
+     * Sets the direction of pacman to that neigbor.
+     * @return The direction of pacman from his position to that chosen neigbor.
+     */
     private static int escapeAlgo(PacmanGame game) {
+        if (isNearGreen(game)) {
+            return greenAlgo(game);
+        }
         int blue = Game.getIntColor(Color.BLUE, CODE);
         //stage 1
         Map2D colorBoard = new Map(game.getGame(CODE));
@@ -167,7 +227,10 @@ public class Ex3Algo implements PacManAlgo {
                 }
             }
         }
-        //Gets the neighbor with farest ghost
+        /**
+         * Gets the neighbor with farest ghost
+         */
+
         int max = dangerDistanceMin;
         Pixel2D chosenNeighbor = new Index2D(pacmanPos);
         for (int i = 0; i < neighborsGrades.length; i++) {
@@ -176,11 +239,84 @@ public class Ex3Algo implements PacManAlgo {
                 chosenNeighbor = neighbors.get(i);
             }
         }
-        // set the direction of pacman
-
+        /**
+         * set the direction of pacman
+         */
         return getDirection(pacmanPos, chosenNeighbor, colorBoard);
     }
 
+    /**
+     * This function checks the distances of the ghosts to pacman,to decide ghost to chase after.
+     * @param game
+     * checks at first the distances of the ghosts to pacman,to see who is the closest ghost.
+     * Finds the shortest path to pacman's closest ghost.
+     * @return the direction for pacman to chase the ghosts
+     */
+    // A function for pacman for chasing the ghosts
+    private static int chaseAlgo(PacmanGame game) {
+        //OBSTACLE
+        int blue = Game.getIntColor(Color.BLUE, CODE);
+        //stage 1
+        Map2D colorBoard = new Map(game.getGame(CODE));
+        Pixel2D pacmanPos = convertPos(game.getPos(CODE));
+        Map2D distanceBoard = colorBoard.allDistance(pacmanPos, blue);
+        // stage 2
+        GhostCL[] ghosts = game.getGhosts(CODE);
+        int[] chaseDistance = new int[ghosts.length];
+        Pixel2D[] ghostPos = new Pixel2D[ghosts.length];
+        // Creates the chaseDistance of ghosts
+        for (int i = 0; i < ghosts.length; i++) {
+            ghostPos[i] = convertPos(ghosts[i].getPos(CODE));
+            chaseDistance[i] = distanceBoard.getPixel(ghostPos[i]);
+        }
+        // Gets the minimum from chaseDistance
+        int chaseDistanceMin = Integer.MAX_VALUE;
+        // Gets the chosen Ghost
+        Pixel2D chosenGhost = new Index2D(pacmanPos);
+        for (int i = 0; i < chaseDistance.length; i++) {
+            if (chaseDistance[i] < chaseDistanceMin && !isInBox(ghostPos[i],colorBoard)) {
+                chaseDistanceMin = chaseDistance[i];
+                chosenGhost = ghostPos[i];
+            }
+        }
+        // set the shortestPath of pacman to the closest ghost
+        if (chosenGhost.equals(pacmanPos)) {
+            return randomDir();
+        }
+        Pixel2D[] shortestPath = colorBoard.shortestPath(pacmanPos, chosenGhost, blue);
+
+        Pixel2D second = shortestPath[1];
+        return getDirection(pacmanPos, second, colorBoard);
+        // Gets the closet
+
+
+    }
+
+    /**
+     * Gets the area of the starting box.
+     * This is to prevent the pacman from entering it and been stuck inside it
+     * @param ghostPos
+     * @param colorBoard
+     * @return the size the box of staring area of the ghosts
+     */
+    private static boolean isInBox(Pixel2D ghostPos, Map2D colorBoard) {
+        if (ghostPos.getX()>=9 && ghostPos.getX()<= 14 && ghostPos.getY()>=11 && ghostPos.getY()<= 13) {
+            return true;
+        }
+        else return false;
+    }
+
+    /**
+     * A function to decide which direction the pacman needs to go.
+     * Checks for cyclic and non cyclic.
+     * Gets the direction for pacman by his position in x and y axis.
+     * Gets the direction for his neighbors in x and y axis.
+     * Then Decides which which direction the pacman needs to go by his position and his neighbors.
+     * @param first
+     * @param second
+     * @param map
+     * @return the direction for pacman to move to for cyclic and no cyclic
+     */
     private static int getDirection(Pixel2D first, Pixel2D second, Map2D map) {
         //cyclic
 
@@ -206,6 +342,14 @@ public class Ex3Algo implements PacManAlgo {
         return randomDir();
     }
 
+    /**
+     * A function to help the other functions to decide which way for pacman to go.
+     * @param colorBoard
+     * @param color
+     * @param distanceBoard
+     * @param pacmanPos
+     * @return The Closest non obstacle pixel from pacman
+     */
     private static Pixel2D getClosestWantedPixel(Map2D colorBoard, int color, Map2D distanceBoard, Pixel2D pacmanPos) {
         int min = Integer.MAX_VALUE;
         Pixel2D pixelMin = new Index2D(pacmanPos);
@@ -224,5 +368,59 @@ public class Ex3Algo implements PacManAlgo {
         int[] dirs = {Game.UP, Game.LEFT, Game.DOWN, Game.RIGHT};
         int ind = (int) (Math.random() * dirs.length);
         return dirs[ind];
+    }
+
+    /**
+     * @param game
+     * Checks the proximity of pacman to the green dots by his and the green dots positions on the map.
+     * @return True if pacman is close enough to a green dot.
+     */
+    private static boolean isNearGreen(PacmanGame game) {
+        int blue = Game.getIntColor(Color.BLUE, CODE);
+        int green = Game.getIntColor(Color.GREEN, CODE);
+        Map2D colorBoard = new Map(game.getGame(CODE));
+        Pixel2D pacmanPos = convertPos(game.getPos(CODE));
+        Map2D distanceBoard = colorBoard.allDistance(pacmanPos, blue);
+        Pixel2D pixelMin = getClosestWantedPixel(colorBoard, green, distanceBoard, pacmanPos);
+        if (distanceBoard.getPixel(pixelMin) < 7 && distanceBoard.getPixel(pixelMin) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+    /**
+     * Checks the proximity of pacman to the ghosts.
+     * @param game
+     * Gets the distances from pacman to the ghosts.
+     * Checks who is the closet ghost to pacman
+     * @return True if pacman is close enough that ghost.
+     */
+    private static boolean isInDanger(PacmanGame game) {
+        int blue = Game.getIntColor(Color.BLUE, CODE);
+        //stage 1
+        Map2D colorBoard = new Map(game.getGame(CODE));
+        Pixel2D pacmanPos = convertPos(game.getPos(CODE));
+        Map2D distanceBoard = colorBoard.allDistance(pacmanPos, blue);
+        // stage 2
+        GhostCL[] ghosts = game.getGhosts(CODE);
+        int[] dangerDistance = new int[ghosts.length];
+        Pixel2D[] ghostPos = new Pixel2D[ghosts.length];
+        // Creates the dangerDistance of ghosts
+        for (int i = 0; i < ghosts.length; i++) {
+            ghostPos[i] = convertPos(ghosts[i].getPos(CODE));
+            dangerDistance[i] = distanceBoard.getPixel(ghostPos[i]);
+        }
+        // Gets the minimum from dangerDistance
+        int dangerDistanceMin = Integer.MAX_VALUE;
+        for (int i = 0; i < dangerDistance.length; i++) {
+            if (dangerDistance[i] < dangerDistanceMin) {
+                dangerDistanceMin = dangerDistance[i];
+            }
+        }
+        int distanceToRun = 5;
+        if (dangerDistanceMin < distanceToRun) {
+            return true;
+        }
+        return false;
     }
 }
